@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Welcome to School</title>
+    <link href="{% static 'Style.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <b><a class="nav-link" href="{% url 'Start_View' %}">На Главную</a></b>
+            </li>
+            <li class="nav-item">
+              <b><a class="nav-link" href="{% url 'schedule' %}">Редактировать расписание</a></b>
+            </li>
+          </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto flex-nowrap">
+            <li class="nav-item">
+                {% if user.is_authenticated %}
+                <b>Привет, {{user.username}}</b>
+                <button type="button" class="btn btn-secondary" onclick="location.href='{% url 'logout' %}'">Выход</button>
+                {% else %}
+                <button type="button" class="btn btn-secondary" onclick="location.href='{% url 'login' %}'">Войти</button>
+                <button type="button" class="btn btn-secondary" onclick="location.href='{% url 'register' %}'">Зарегистрироваться</button>
+                {% endif %}
+            </li>
+            </ul>
+        </div>
+    </nav>
+  </div>
+    {% if messages %}
+    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        <ul class="messages">
+            {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+    <form method="POST" action="{% url 'confirm' %}">
+    <div class="container-fluid"  style="margin-top: 10px !important;">
+      <div class="row">
+       <div class="col-sm d-flex justify-content-start">
+          <input type="submit" class="btn btn-danger" value="Обновить расписание" />
+       </div>
+        <div class="col-sm d-flex justify-content-end">
+          <input class="form-control input-group input-group-sm mb-1" style="width: 15rem; height: 2rem;" type="text" id="myInput" onkeyup="myFunction()" placeholder="Поиск...">
+       </div>
+    </div>
+    </div>
+    {% csrf_token %}
+    <div class="container-fluid"  style="margin-top: 10px !important;">
+    <table class="table-light table" id="myTable">
+      <thead>
+        <tr>
+          <th>Время занятия</th>
+          <th>Группы</th>
+          <th>Предметы</th>
+          <th>Аудитория</th>
+          <th>Количество часов</th>
+          <th>День недели</th>
+        </tr>
+      </thead>
+      <tbody>
+            {% for i in data %}
+            <tr>
+                <td><input name="time" class="form-control input-group input-group-sm mb-1" type="text" value="{{i.Time}}" readonly></td>
+                <td><input name="groups" class="form-control input-group input-group-sm mb-1" type="text" value="{{i.Groups}}" readonly></td>
+                <td><input name="subject" class="form-control input-group input-group-sm mb-1" type="text" value="{{i.Subject}}" required></td>
+                <td><input name="room" class="form-control input-group input-group-sm mb-1" type="text" value="{{i.Room}}" required></td>
+                <td><input name="capacity" class="form-control input-group input-group-sm mb-1" type="text" value="{{i.Capacity}}" readonly></td>
+                <td><input name="day" class="form-control input-group input-group-sm mb-1" type="text" value="{{i.Day}}" readonly></td>
+            </tr>
+            {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </form>
+<script type="text/javascript" src="{% static 'Filter.js' %}" defer></script>
+</body>
+</html>
